@@ -2,12 +2,12 @@ import pymysql
 import csv
 import boto3
 
-# Conexión a la base de datos MySQL local
+# Conexión a la base de datos MySQL
 conexion = pymysql.connect(
-    host='localhost',      # Usamos localhost porque MySQL está corriendo en la misma máquina
-    user='root',           # Usuario de MySQL, en este caso root
-    password='Mysql@123',  # La contraseña que configuraste para root
-    database='mi_basededatos'  # El nombre de la base de datos que creamos
+    host='localhost',
+    user='root',  # Asegúrate de que el usuario sea correcto
+    password='Mysql@123',  # Reemplaza con la contraseña de MySQL si es necesaria
+    database='mi_basededatos'
 )
 
 # Consulta a la tabla 'usuarios'
@@ -16,16 +16,16 @@ cursor.execute("SELECT * FROM usuarios")
 rows = cursor.fetchall()
 
 # Guardar los resultados en un archivo CSV
-ficheroUpload = "usuarios.csv"
+ficheroUpload = "resultado_final.csv"
 with open(ficheroUpload, 'w', newline='') as archivo_csv:
     escritor = csv.writer(archivo_csv)
     escritor.writerow(['ID', 'Nombre', 'Apellido', 'Edad'])  # Encabezado
     escritor.writerows(rows)
 
-print("Datos exportados a usuarios.csv")
+print(f"Datos exportados a {ficheroUpload}")
 
 # Subir el archivo CSV a S3
-nombreBucket = "gcr-output-01"  # Reemplazar con el nombre de tu bucket
+nombreBucket = "ingesta02-mysql"  # Asegúrate de que el bucket exista
 s3 = boto3.client('s3')
 response = s3.upload_file(ficheroUpload, nombreBucket, ficheroUpload)
 
